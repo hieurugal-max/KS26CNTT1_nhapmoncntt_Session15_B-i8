@@ -1,0 +1,34 @@
+Bài 8: Kiểm tra nguyên nhân rò rỉ dữ liệu CampusPay
+Phần 1: Phân tích lỗ hổng
+1. Dòng log gây rò rỉ
+Dòng 1 – File campuspay_beta_users.xlsx
+- Quyền: Editor
+- Phạm vi: Anyone with the link
+Đây là lỗi nghiêm trọng nhất. Bất kỳ ai có đường link đều có thể mở file, xem thông tin khách hàng, chỉnh sửa hoặc xóa dữ liệu. Khi link bị phát tán, dữ liệu sinh viên có thể bị lộ ra ngoài
+
+Dòng 3 – File slide_pitch_v8.pptx
+- Quyền: Commenter
+- Phạm vi: Anyone with the link
+Người có link có thể xem và bình luận trên slide. Cách chia sẻ này vẫn có rủi ro nếu slide chứa thông tin nội bộ, nhưng chưa có bằng chứng cho thấy đây là nguồn làm lộ dữ liệu khách hàng
+
+Dòng 5 – File campuspay_api_keys.txt
+
+Người lạ đã truy cập file chứa khóa API. Cần kiểm tra lại lịch sử chia sẻ vì log chưa cho biết chính xác người này có quyền bằng cách nào.
+2. Ba giả thuyết về việc người lạ truy cập file API
+1. Người lạ đã được cấp quyền từ trước nhưng chưa bị phát hiện.
+2. Tài khoản Email B bị chiếm quyền hoặc thông tin đăng nhập bị lộ.
+3. File nằm trong thư mục cha có quyền chia sẻ rộng, hoặc còn một cách cấp quyền khác chưa được kiểm tra
+Phần 2: Sửa lỗi và nghiệm thu
+3. Bảng phân quyền đúng
+- File campuspay_beta_users.xlsx: Chỉ người quản lý dữ liệu được cấp quyền Editor. Người chỉ cần xem thì cấp Viewer. Chuyển quyền truy cập từ “Anyone with the link” sang “Restricted” để tránh lộ dữ liệu khách hàng
+
+- File campuspay_api_keys.txt: Chỉ cấp quyền cho người phụ trách kỹ thuật thực sự cần sử dụng. Để chế độ Restricted và xóa những người không cần quyền truy cập
+
+- File slide_pitch_v8.pptx: Thành viên thiết kế được cấp Editor để chỉnh sửa. Những người góp ý chỉ cần quyền Commenter. Không nên để “Anyone with the link” vì đây là tài liệu nội bộ
+
+- Quyền của thành viên C: Chỉ cấp Editor nếu cần chỉnh sửa dữ liệu. Nếu chỉ kiểm thử và xem thông tin thì cấp Viewer, đồng thời giới hạn quyền theo đúng email
+
+- Xử lý link cũ: Chuyển quyền truy cập sang Restricted, xóa người không còn cần sử dụng và kiểm tra lại danh sách được chia sẻ. Với người cộng tác tạm thời, nên đặt ngày hết hạn quyền truy cập nếu có hỗ trợ.
+4. Thu hồi các link cũ
+- Mở file trong Google Drive, chọn Share, đổi quyền General access thành Restricted và xóa những người không còn cần truy cập
+- Dùng Set Expiration Date khi muốn cấp quyền tạm thời cho cộng tác viên, chẳng hạn trong thời gian kiểm thử. Khi hết hạn, quyền truy cập sẽ tự hết hiệu lực nếu tài khoản và dịch vụ hỗ trợ tính năng này.
